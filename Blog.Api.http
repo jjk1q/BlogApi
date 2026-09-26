@@ -1,6 +1,43 @@
-@Blog.Api_HostAddress = http://localhost:5295
+### 1. Нормальное создание - ждём 201
+@host = http://localhost:5295
+POST {{host}}/api/posts
+Content-Type: application/json
 
-GET {{Blog.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+{
+  "title": "First post",
+  "content": "Hello"
+}
 
-###
+
+
+### 2. Получить созданный - ждём 200 (подставь id из ответа 1)
+GET {{host}}/api/posts/1
+
+### 3. Несуществующий - ждём 404
+GET {{host}}/api/posts/999
+
+### 4. Title из пробелов - ждём 400 с твоим текстом
+POST {{host}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "   ",
+  "content": "Hello"
+}
+
+### 5. Пустой title - посмотри, какой ответ
+POST {{host}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "",
+  "content": "Hello"
+}
+
+### 6. Без title вообще - посмотри, какой ответ
+POST {{host}}/api/posts
+Content-Type: application/json
+
+{
+  "content": "Hello"
+}
