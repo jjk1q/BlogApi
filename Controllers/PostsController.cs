@@ -3,6 +3,7 @@ using Blog.Api.Data;
 using Blog.Api.Dtos;
 using Blog.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 namespace Blog.Api.Controllers;
 
 [ApiController]
@@ -15,6 +16,7 @@ public class PostsController : ControllerBase
     {
         _db = db;
     }
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<PostResponse>> GetById(int id)
     {
@@ -41,9 +43,18 @@ public class PostsController : ControllerBase
 
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<PostResponse>>> GetAll()
+    {
+        var list = await _db.Posts.OrderByDescending(p => p.CreatedAt).ToListAsync();
+        return list.Select(p => ToResponse(p)).ToList();    
+    }
+
     private static PostResponse ToResponse(Post post)
     {
         return new PostResponse(post.Id, post.Title, post.Content, post.CreatedAt, post.UpdatedAt, post.IsPublished);
     }
+
+    
     
 }
