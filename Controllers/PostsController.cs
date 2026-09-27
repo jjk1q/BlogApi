@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Blog.Api.Data;
 using Blog.Api.Dtos;
 using Blog.Api.Models;
@@ -50,11 +49,21 @@ public class PostsController : ControllerBase
         return list.Select(p => ToResponse(p)).ToList();    
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult<PostResponse>> Update(int id, UpdatePostRequest request)
+    {
+        var post = await _db.Posts.FindAsync(id);
+        if(post == null)
+            return NotFound();
+        post.Update(request.Title, request.Content);
+        await _db.SaveChangesAsync();
+        return Ok(ToResponse(post));
+    }
+
+
     private static PostResponse ToResponse(Post post)
     {
         return new PostResponse(post.Id, post.Title, post.Content, post.CreatedAt, post.UpdatedAt, post.IsPublished);
     }
 
-    
-    
 }

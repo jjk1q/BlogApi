@@ -1,4 +1,50 @@
 ### 1. Нормальное создание - ждём 201
 @host = http://localhost:5295
 
-GET {{host}}/api/posts
+### Создать пост для теста
+POST {{host}}/api/posts
+Content-Type: application/json
+
+{
+  "title": "Old title",
+  "content": "Old content"
+}
+
+### Отредактировать (подставь id из ответа выше) - ждём 200
+PUT {{host}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "New title",
+  "content": "New content"
+}
+
+### Проверить, что реально сохранилось - новый текст, старый CreatedAt, заполнен UpdatedAt
+GET {{host}}/api/posts/1
+
+### Несуществующий - ждём 404
+PUT {{host}}/api/posts/999
+Content-Type: application/json
+
+{
+  "title": "New title",
+  "content": "New content"
+}
+
+### Пустой title - ждём 400 от ASP.NET
+PUT {{host}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "",
+  "content": "New content"
+}
+
+### Title из пробелов - сейчас будет 500, это ожидаемо, починим глобальным обработчиком
+PUT {{host}}/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "   ",
+  "content": "New content"
+}
