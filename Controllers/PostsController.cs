@@ -60,7 +60,39 @@ public class PostsController : ControllerBase
         return Ok(ToResponse(post));
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var post = await _db.Posts.FindAsync(id);
+        if(post == null)
+            return NotFound();
+        _db.Posts.Remove(post);
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
 
+    [HttpPost("{id}/publish")]
+    public async Task<ActionResult<PostResponse>> Publish(int id)
+    {
+        var post = await _db.Posts.FindAsync(id);
+        if(post == null)
+            return NotFound();
+        post.Publish();
+        await _db.SaveChangesAsync();
+        return Ok(ToResponse(post));
+    }
+
+    [HttpPost("{id}/unpublish")]
+    public async Task<ActionResult<PostResponse>> Unpublish(int id)
+    {
+        var post = await _db.Posts.FindAsync(id);
+        if(post == null)
+            return NotFound();
+        post.Unpublish();
+        await _db.SaveChangesAsync();
+        return Ok(ToResponse(post));
+    }
+    
     private static PostResponse ToResponse(Post post)
     {
         return new PostResponse(post.Id, post.Title, post.Content, post.CreatedAt, post.UpdatedAt, post.IsPublished);
